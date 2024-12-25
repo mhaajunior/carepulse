@@ -43,21 +43,6 @@ const RegisterForm = ({ user }: { user: User }) => {
   const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
     setIsLoading(true);
 
-    // Store file info in form data as
-    let formData;
-    if (
-      values.identificationDocument &&
-      values.identificationDocument?.length > 0
-    ) {
-      const blobFile = new Blob([values.identificationDocument[0]], {
-        type: values.identificationDocument[0].type,
-      });
-
-      formData = new FormData();
-      formData.append("blobFile", blobFile);
-      formData.append("fileName", values.identificationDocument[0].name);
-    }
-
     try {
       const patient = {
         userId: user.$id,
@@ -79,9 +64,9 @@ const RegisterForm = ({ user }: { user: User }) => {
         pastMedicalHistory: values.pastMedicalHistory,
         identificationType: values.identificationType,
         identificationNumber: values.identificationNumber,
-        identificationDocument: values.identificationDocument
-          ? formData
-          : undefined,
+        identificationDocument: values.identificationDocument,
+        treatmentConsent: values.treatmentConsent,
+        disclosureConsent: values.disclosureConsent,
         privacyConsent: values.privacyConsent,
       };
 
@@ -167,10 +152,16 @@ const RegisterForm = ({ user }: { user: User }) => {
                     defaultValue={field.value}
                   >
                     {GenderOptions.map((option, i) => (
-                      <div key={option + i} className="radio-group">
-                        <RadioGroupItem value={option} id={option} />
-                        <Label htmlFor={option} className="cursor-pointer">
-                          {option}
+                      <div key={option.value + i} className="radio-group">
+                        <RadioGroupItem
+                          value={option.value}
+                          id={option.value}
+                        />
+                        <Label
+                          htmlFor={option.value}
+                          className="cursor-pointer"
+                        >
+                          {option.label}
                         </Label>
                       </div>
                     ))}
